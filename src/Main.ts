@@ -278,9 +278,11 @@ class StateMachine{
         else if(this.currentState.getStateName() == "move"){
             this.currentState.onExit();
         }*/
-        this.currentState.onExit();
-        this.currentState.setStateName(s);
-        this.currentState.onEnter();
+        if(this.currentState.getStateName() != s){
+            this.currentState.onExit();
+            this.currentState.setStateName(s);
+            this.currentState.onEnter();
+        }
     }
 }
 
