@@ -135,10 +135,16 @@ var Main = (function (_super) {
             m.y = e.stageY;
             console.log("TargetX==============" + e.stageX);
             m.setState("move");
+            var MaxLength = 0;
+            var RatioX;
+            var RatioY;
             var dx = e.stageX - PlayerContainer.x;
             var dy = e.stageY - PlayerContainer.y;
-            var Ratio = dx / dy;
-            m.Ratio = Ratio;
+            MaxLength = Math.pow(dx * dx + dy * dy, 1 / 2);
+            RatioX = dx / MaxLength;
+            RatioY = dy / MaxLength;
+            m.RatioX = RatioX;
+            m.RatioY = RatioY;
             _this.addEventListener(egret.Event.ENTER_FRAME, moveFunction, _this);
             m.timeOnEnterFrame = egret.getTimer();
             /*this.addEventListener(egret.Event.ENTER_FRAME,(e)=>{
@@ -163,16 +169,16 @@ var Main = (function (_super) {
             var now = egret.getTimer();
             var time = m.timeOnEnterFrame;
             var pass = now - time;
-            var speed = 0.05;
+            var speed = 0.4;
             //var dx = this.mac.x - this.mac.PlayerContainer.x; 
             //var dy = this.mac.y - this.mac.PlayerContainer.y;
-            console.log("Ratio==============" + m.Ratio);
-            m.PlayerContainer.x += speed * pass;
-            m.PlayerContainer.y += speed * pass * m.Ratio;
+            console.log("Ratio==============" + m.RatioX);
+            m.PlayerContainer.x += speed * pass * m.RatioX;
+            m.PlayerContainer.y += speed * pass * m.RatioY;
             console.log("ContainerCoordinate==============" + m.PlayerContainer.x);
             console.log("TargetCoordinate==============" + m.x);
             m.timeOnEnterFrame = egret.getTimer();
-            if (Math.floor(m.PlayerContainer.x) == m.x) {
+            if (m.PlayerContainer.x - m.x < 2 && m.PlayerContainer.x - m.x > -2) {
                 console.log("Im IN!!!!");
                 this.removeEventListener(egret.Event.ENTER_FRAME, moveFunction, this);
                 m.setState("stand");
@@ -197,7 +203,8 @@ egret.registerClass(Main,'Main');
 var StateMachine = (function () {
     function StateMachine(stage, idleanim, PlayerContainer, walkanim) {
         this.timeOnEnterFrame = 0;
-        this.Ratio = 0;
+        this.RatioX = 0;
+        this.RatioY = 0;
         this.stage = stage;
         this.idleanim = idleanim;
         this.walkanim = walkanim;
@@ -247,14 +254,12 @@ var Standstate = (function () {
         this.mac.currentState = this.mac.movestate;
         console.log("退出stand");
     };
-    p.moveFunction = function (e) { };
-    ;
     return Standstate;
 }());
 egret.registerClass(Standstate,'Standstate',["State"]);
 var Movestate = (function () {
+    //private speed:number = 0.5;
     function Movestate(mac) {
-        this.speed = 0.05;
         this.s = "move";
         this.mac = mac;
     }
@@ -280,21 +285,6 @@ var Movestate = (function () {
         this.mac.walkanim.alpha = 0;
         this.mac.currentState = this.mac.standstate;
     };
-    p.moveFunction = function (e) {
-        //console.log("TargetXTest=============="+this.mac.x);
-        var now = egret.getTimer();
-        var time = this.mac.timeOnEnterFrame;
-        var pass = now - time;
-        //var dx = this.mac.x - this.mac.PlayerContainer.x; 
-        //var dy = this.mac.y - this.mac.PlayerContainer.y;
-        console.log("Ratio==============" + this.mac.Ratio);
-        this.mac.PlayerContainer.x += this.speed * pass;
-        this.mac.PlayerContainer.y += this.speed * pass * this.mac.Ratio;
-        this.mac.timeOnEnterFrame = egret.getTimer();
-        //console.log("ContainerCoordinate=============="+this.mac.PlayerContainer.x);
-        //console.log("TargetCoordinate=============="+this.mac.x);
-    };
-    ;
     return Movestate;
 }());
 egret.registerClass(Movestate,'Movestate',["State"]);
