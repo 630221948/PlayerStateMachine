@@ -196,7 +196,7 @@ class Main extends egret.DisplayObjectContainer {
             var now = egret.getTimer();
             var time = m.timeOnEnterFrame;
             var pass = now - time;
-            var speed = 0.4;
+            var speed = 0.3;
             //var dx = this.mac.x - this.mac.PlayerContainer.x; 
             //var dy = this.mac.y - this.mac.PlayerContainer.y;
             console.log("Ratio=============="+m.RatioX);
@@ -205,7 +205,10 @@ class Main extends egret.DisplayObjectContainer {
             console.log("ContainerCoordinate=============="+m.PlayerContainer.x);
             console.log("TargetCoordinate=============="+m.x);
             m.timeOnEnterFrame = egret.getTimer();
-            if(m.PlayerContainer.x - m.x <2 && m.PlayerContainer.x-m.x>-2){
+
+            console.log(pass);
+
+            if(m.PlayerContainer.y - m.y < 6 && m.PlayerContainer.y-m.y > -6){
                     console.log("Im IN!!!!")
                     this.removeEventListener(egret.Event.ENTER_FRAME,moveFunction,this);
                     m.setState("stand");
