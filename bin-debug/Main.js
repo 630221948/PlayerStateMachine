@@ -133,15 +133,53 @@ var Main = (function (_super) {
         this.addEventListener(egret.TouchEvent.TOUCH_TAP, function (e) {
             m.x = e.stageX;
             m.y = e.stageY;
+            console.log("TargetX==============" + e.stageX);
             m.setState("move");
+            var dx = e.stageX - PlayerContainer.x;
+            var dy = e.stageY - PlayerContainer.y;
+            var Ratio = dx / dy;
+            m.Ratio = Ratio;
+            _this.addEventListener(egret.Event.ENTER_FRAME, moveFunction, _this);
             m.timeOnEnterFrame = egret.getTimer();
-            _this.addEventListener(egret.Event.ENTER_FRAME, m.currentState.moveFunction, _this);
+            /*this.addEventListener(egret.Event.ENTER_FRAME,(e)=>{
+                m.currentState.moveFunction(e);
+                console.log("ContainerCoordinate=============="+Math.floor(PlayerContainer.x));
+                console.log("TargetCoordinate=============="+m.x);
+                if(Math.floor(PlayerContainer.x) == m.x &&PlayerContainer.y == m.y){
+                    console.log("Im IN!!!!")
+                    this.removeEventListener(egret.Event.ENTER_FRAME,(e)=>{
+                        m.currentState.moveFunction(e);
+                    },this);
+                    m.setState("stand");
+                }
+            },this);*/
             //console.log(m.image.x);
-            if (PlayerContainer.x == e.stageX && PlayerContainer.y == e.stageY) {
-                _this.removeEventListener(egret.Event.ENTER_FRAME, m.currentState.moveFunction, _this);
+            /*if(PlayerContainer.x == e.stageX && PlayerContainer.y == e.stageY){
+                this.removeEventListener(egret.Event.ENTER_FRAME,m.currentState.moveFunction,this);
+                m.setState("stand");
+            }*/
+        }, this);
+        function moveFunction(e) {
+            var now = egret.getTimer();
+            var time = m.timeOnEnterFrame;
+            var pass = now - time;
+            var speed = 0.05;
+            //var dx = this.mac.x - this.mac.PlayerContainer.x; 
+            //var dy = this.mac.y - this.mac.PlayerContainer.y;
+            console.log("Ratio==============" + m.Ratio);
+            m.PlayerContainer.x += speed * pass;
+            m.PlayerContainer.y += speed * pass * m.Ratio;
+            console.log("ContainerCoordinate==============" + m.PlayerContainer.x);
+            console.log("TargetCoordinate==============" + m.x);
+            m.timeOnEnterFrame = egret.getTimer();
+            if (Math.floor(m.PlayerContainer.x) == m.x) {
+                console.log("Im IN!!!!");
+                this.removeEventListener(egret.Event.ENTER_FRAME, moveFunction, this);
                 m.setState("stand");
             }
-        }, this);
+            //console.log("ContainerCoordinate=============="+this.mac.PlayerContainer.x);
+            //console.log("TargetCoordinate=============="+this.mac.x);        
+        }
     };
     /**
      * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
@@ -159,6 +197,7 @@ egret.registerClass(Main,'Main');
 var StateMachine = (function () {
     function StateMachine(stage, idleanim, PlayerContainer, walkanim) {
         this.timeOnEnterFrame = 0;
+        this.Ratio = 0;
         this.stage = stage;
         this.idleanim = idleanim;
         this.walkanim = walkanim;
@@ -242,14 +281,18 @@ var Movestate = (function () {
         this.mac.currentState = this.mac.standstate;
     };
     p.moveFunction = function (e) {
+        //console.log("TargetXTest=============="+this.mac.x);
         var now = egret.getTimer();
         var time = this.mac.timeOnEnterFrame;
         var pass = now - time;
-        var dx = this.mac.x - this.mac.PlayerContainer.x;
-        var dy = this.mac.y - this.mac.PlayerContainer.y;
+        //var dx = this.mac.x - this.mac.PlayerContainer.x; 
+        //var dy = this.mac.y - this.mac.PlayerContainer.y;
+        console.log("Ratio==============" + this.mac.Ratio);
         this.mac.PlayerContainer.x += this.speed * pass;
-        this.mac.PlayerContainer.x += this.speed * pass * (dx / dy);
+        this.mac.PlayerContainer.y += this.speed * pass * this.mac.Ratio;
         this.mac.timeOnEnterFrame = egret.getTimer();
+        //console.log("ContainerCoordinate=============="+this.mac.PlayerContainer.x);
+        //console.log("TargetCoordinate=============="+this.mac.x);
     };
     ;
     return Movestate;

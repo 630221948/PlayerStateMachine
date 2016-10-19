@@ -156,15 +156,58 @@ class Main extends egret.DisplayObjectContainer {
         this.addEventListener(egret.TouchEvent.TOUCH_TAP,(e)=>{
             m.x = e.stageX;
             m.y = e.stageY;
+            console.log("TargetX=============="+e.stageX);
             m.setState("move");
+
+            var dx = e.stageX - PlayerContainer.x;
+            var dy = e.stageY - PlayerContainer.y;
+            var Ratio = dx/dy;
+            m.Ratio = Ratio;
+            this.addEventListener(egret.Event.ENTER_FRAME,moveFunction,this);
             m.timeOnEnterFrame = egret.getTimer();
-            this.addEventListener(egret.Event.ENTER_FRAME,m.currentState.moveFunction,this);
+
+            /*this.addEventListener(egret.Event.ENTER_FRAME,(e)=>{
+                m.currentState.moveFunction(e);
+                console.log("ContainerCoordinate=============="+Math.floor(PlayerContainer.x));
+                console.log("TargetCoordinate=============="+m.x);
+                if(Math.floor(PlayerContainer.x) == m.x &&PlayerContainer.y == m.y){
+                    console.log("Im IN!!!!")
+                    this.removeEventListener(egret.Event.ENTER_FRAME,(e)=>{
+                        m.currentState.moveFunction(e);
+                    },this);
+                    m.setState("stand");
+                }
+            },this);*/
+
             //console.log(m.image.x);
-            if(PlayerContainer.x == e.stageX && PlayerContainer.y == e.stageY){
+            /*if(PlayerContainer.x == e.stageX && PlayerContainer.y == e.stageY){
                 this.removeEventListener(egret.Event.ENTER_FRAME,m.currentState.moveFunction,this);
                 m.setState("stand");
-            }
+            }*/
         },this);
+
+        function moveFunction(e:egret.Event):void{
+            var now = egret.getTimer();
+            var time = m.timeOnEnterFrame;
+            var pass = now - time;
+            var speed = 0.05;
+            //var dx = this.mac.x - this.mac.PlayerContainer.x; 
+            //var dy = this.mac.y - this.mac.PlayerContainer.y;
+            console.log("Ratio=============="+m.Ratio);
+            m.PlayerContainer.x += speed*pass;
+            m.PlayerContainer.y += speed*pass*m.Ratio;
+            console.log("ContainerCoordinate=============="+m.PlayerContainer.x);
+            console.log("TargetCoordinate=============="+m.x);
+            m.timeOnEnterFrame = egret.getTimer();
+            if(Math.floor(m.PlayerContainer.x) == m.x){
+                    console.log("Im IN!!!!")
+                    this.removeEventListener(egret.Event.ENTER_FRAME,moveFunction,this);
+                    m.setState("stand");
+            }
+
+            //console.log("ContainerCoordinate=============="+this.mac.PlayerContainer.x);
+            //console.log("TargetCoordinate=============="+this.mac.x);        
+        }
 
     }
 
@@ -204,6 +247,7 @@ class StateMachine{
     public standstate:Standstate;
     public movestate:Movestate;
     public timeOnEnterFrame:number = 0;
+    public Ratio:number = 0;
 
     constructor(stage:egret.DisplayObjectContainer,idleanim:egret.MovieClip,PlayerContainer:egret.DisplayObjectContainer,walkanim:egret.MovieClip){
         this.stage = stage ;
@@ -287,15 +331,19 @@ class Movestate implements State{
     }
 
     public moveFunction(e:egret.Event){
+        //console.log("TargetXTest=============="+this.mac.x);
         var now = egret.getTimer();
         var time = this.mac.timeOnEnterFrame;
         var pass = now - time;
-        var dx = this.mac.x - this.mac.PlayerContainer.x; 
-        var dy = this.mac.y - this.mac.PlayerContainer.y;
-        
+        //var dx = this.mac.x - this.mac.PlayerContainer.x; 
+        //var dy = this.mac.y - this.mac.PlayerContainer.y;
+        console.log("Ratio=============="+this.mac.Ratio);
+
         this.mac.PlayerContainer.x += this.speed*pass;
-        this.mac.PlayerContainer.x += this.speed*pass*(dx/dy);
+        this.mac.PlayerContainer.y += this.speed*pass*this.mac.Ratio;
         this.mac.timeOnEnterFrame = egret.getTimer();
+        //console.log("ContainerCoordinate=============="+this.mac.PlayerContainer.x);
+        //console.log("TargetCoordinate=============="+this.mac.x);
     };
 }
 
