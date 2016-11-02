@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "bg_jpg,egret_icon_png,description_json,PLAYER_IDLE_json,PLAYER_IDLE_png,PlayerContainer_png,PLAYER_WALK_png,PLAYER_WALK_json",
+			"keys": "bg_jpg,egret_icon_png,description_json,PLAYER_IDLE_json,PLAYER_IDLE_png,PlayerContainer_png,PLAYER_WALK_png,PLAYER_WALK_json,Wall_png,Road_png",
 			"name": "preload"
 		}
 	],
@@ -45,6 +45,16 @@
 			"name": "PLAYER_WALK_json",
 			"type": "json",
 			"url": "assets/PLAYER_WALK.json"
+		},
+		{
+			"name": "Wall_png",
+			"type": "image",
+			"url": "assets/Wall.png"
+		},
+		{
+			"name": "Road_png",
+			"type": "image",
+			"url": "assets/Road.png"
 		}
 	]
 }

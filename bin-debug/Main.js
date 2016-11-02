@@ -101,6 +101,8 @@ var Main = (function (_super) {
      * Create a game scene
      */
     p.createGameScene = function () {
+        //this.stage.stageHeight = 1000;
+        //this.stage.stageWidth = 1000;
         var _this = this;
         var sky = this.createBitmapByName("bg_jpg");
         this.addChild(sky);
@@ -127,6 +129,7 @@ var Main = (function (_super) {
         playeridle_mc.alpha = 0;
         playerwalk_mc.alpha = 0;
         //PlayerContainer.alpha = 0;
+        //var gridMap = new GridMap(this);
         this.touchEnabled = true;
         var m = new StateMachine(this, playeridle_mc, PlayerContainer, playerwalk_mc);
         //m.setState("move");
@@ -145,8 +148,9 @@ var Main = (function (_super) {
             RatioY = dy / MaxLength;
             m.RatioX = RatioX;
             m.RatioY = RatioY;
-            _this.addEventListener(egret.Event.ENTER_FRAME, moveFunction, _this);
+            //this.addEventListener(egret.Event.ENTER_FRAME,moveFunction,this);
             m.timeOnEnterFrame = egret.getTimer();
+            egret.startTick(moveFunction, _this);
             /*this.addEventListener(egret.Event.ENTER_FRAME,(e)=>{
                 m.currentState.moveFunction(e);
                 console.log("ContainerCoordinate=============="+Math.floor(PlayerContainer.x));
@@ -165,7 +169,7 @@ var Main = (function (_super) {
                 m.setState("stand");
             }*/
         }, this);
-        function moveFunction(e) {
+        function moveFunction() {
             var now = egret.getTimer();
             var time = m.timeOnEnterFrame;
             var pass = now - time;
@@ -181,9 +185,10 @@ var Main = (function (_super) {
             console.log(pass);
             if (m.PlayerContainer.y - m.y < 6 && m.PlayerContainer.y - m.y > -6) {
                 console.log("Im IN!!!!");
-                this.removeEventListener(egret.Event.ENTER_FRAME, moveFunction, this);
+                egret.stopTick(moveFunction, this);
                 m.setState("stand");
             }
+            return false;
             //console.log("ContainerCoordinate=============="+this.mac.PlayerContainer.x);
             //console.log("TargetCoordinate=============="+this.mac.x);        
         }
@@ -201,94 +206,4 @@ var Main = (function (_super) {
     return Main;
 }(egret.DisplayObjectContainer));
 egret.registerClass(Main,'Main');
-var StateMachine = (function () {
-    function StateMachine(stage, idleanim, PlayerContainer, walkanim) {
-        this.timeOnEnterFrame = 0;
-        this.RatioX = 0;
-        this.RatioY = 0;
-        this.stage = stage;
-        this.idleanim = idleanim;
-        this.walkanim = walkanim;
-        this.PlayerContainer = PlayerContainer;
-        this.standstate = new Standstate(this);
-        this.movestate = new Movestate(this);
-        this.currentState = this.standstate;
-        this.currentState.onEnter();
-    }
-    var d = __define,c=StateMachine,p=c.prototype;
-    p.setState = function (s) {
-        console.log("当前状态：" + this.currentState.getStateName());
-        console.log("即将进入状态：" + s);
-        /*if(this.currentState.getStateName() == "stand"){
-            this.currentState.onExit();
-        }
-        else if(this.currentState.getStateName() == "move"){
-            this.currentState.onExit();
-        }*/
-        if (this.currentState.getStateName() != s) {
-            this.currentState.onExit();
-            this.currentState.setStateName(s);
-            this.currentState.onEnter();
-        }
-    };
-    return StateMachine;
-}());
-egret.registerClass(StateMachine,'StateMachine');
-var Standstate = (function () {
-    function Standstate(mac) {
-        this.s = "stand";
-        this.mac = mac;
-    }
-    var d = __define,c=Standstate,p=c.prototype;
-    p.getStateName = function () {
-        return this.s;
-    };
-    p.setStateName = function (Statename) {
-        this.s = Statename;
-    };
-    p.onEnter = function () {
-        console.log("进入stand");
-        //this.mac.PlayerContainer.addChild(this.mac.idleanim);
-        this.mac.idleanim.alpha = 1;
-        //this.mac.idleanim.gotoAndPlay(1,-1);
-    };
-    p.onExit = function () {
-        this.mac.idleanim.alpha = 0;
-        this.mac.currentState = this.mac.movestate;
-        console.log("退出stand");
-    };
-    return Standstate;
-}());
-egret.registerClass(Standstate,'Standstate',["State"]);
-var Movestate = (function () {
-    //private speed:number = 0.5;
-    function Movestate(mac) {
-        this.s = "move";
-        this.mac = mac;
-    }
-    var d = __define,c=Movestate,p=c.prototype;
-    p.getStateName = function () {
-        return this.s;
-    };
-    p.setStateName = function (Statename) {
-        this.s = Statename;
-    };
-    p.onEnter = function () {
-        //MoveFunction();
-        //this.mac.PlayerContainer.addChild(this.mac.walkanim);
-        //this.mac.walkanim.gotoAndPlay(1,-1);
-        this.mac.walkanim.alpha = 1;
-        //egret.Tween.get( this.mac.PlayerContainer ).to( {x:this.mac.x,y:this.mac.y}, 3000, egret.Ease.sineIn );
-        //this.mac.PlayerContainer.x = this.mac.x;
-        //this.mac.PlayerContainer.y = this.mac.y;
-        console.log("进入move");
-    };
-    p.onExit = function () {
-        console.log("退出move");
-        this.mac.walkanim.alpha = 0;
-        this.mac.currentState = this.mac.standstate;
-    };
-    return Movestate;
-}());
-egret.registerClass(Movestate,'Movestate',["State"]);
 //# sourceMappingURL=Main.js.map

@@ -1,0 +1,8 @@
+class AStar {
+
+
+
+	
+	public constructor() {
+	}
+}
